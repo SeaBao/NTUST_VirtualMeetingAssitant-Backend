@@ -16,6 +16,12 @@ namespace VirturlMeetingAssitant.Backend.Db
         public MeetingContext(DbContextOptions<MeetingContext> options) : base(options) { }
     }
 
+    public class BaseEntity
+    {
+        public DateTime LastUpdateTime { get; set; }
+        public DateTime CreatedTime { get; set; }
+    }
+
     public enum MeetingRepeatType
     {
         Weekly,

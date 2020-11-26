@@ -29,6 +29,14 @@ namespace VirturlMeetingAssitant.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MeetingContext>(options => options.UseNpgsql(Configuration.GetConnectionString("MeetingDatabase")));
+
+            #region Repositories
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IMeetingRepository, MeetingRepository>();
+            services.AddTransient<IRoomRepository, RoomRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            #endregion
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
