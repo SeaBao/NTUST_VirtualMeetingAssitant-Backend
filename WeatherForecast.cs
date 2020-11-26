@@ -1,6 +1,6 @@
 using System;
 
-namespace Backend
+namespace VirturlMeetingAssitant.Backend
 {
     public class WeatherForecast
     {

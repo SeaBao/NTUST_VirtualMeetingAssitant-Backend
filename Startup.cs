@@ -11,8 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using VirturlMeetingAssitant.Backend.Db;
 
-namespace Backend
+namespace VirturlMeetingAssitant.Backend
 {
     public class Startup
     {
@@ -26,7 +28,7 @@ namespace Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<MeetingContext>(options => options.UseNpgsql(Configuration.GetConnectionString("MeetingDatabase")));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -41,7 +43,6 @@ namespace Backend
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend v1"));
             }
 
             app.UseSwaggerUI(c =>

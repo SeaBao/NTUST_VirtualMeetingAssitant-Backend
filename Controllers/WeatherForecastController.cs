@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Backend.Controllers
+namespace VirturlMeetingAssitant.Backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
