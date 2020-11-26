@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirturlMeetingAssitant.Backend.Db;
 
 public interface IRepository<TEntity> where TEntity : class
 {
@@ -20,9 +21,9 @@ public interface IRepository<TEntity> where TEntity : class
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
-    protected readonly DbContext _dbContext;
+    protected readonly MeetingContext _dbContext;
 
-    public Repository(DbContext dbContext)
+    public Repository(MeetingContext dbContext)
     {
         _dbContext = dbContext;
     }

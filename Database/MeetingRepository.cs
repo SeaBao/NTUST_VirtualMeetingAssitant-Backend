@@ -10,6 +10,6 @@ namespace VirturlMeetingAssitant.Backend.Db
     public interface IMeetingRepository : IRepository<Meeting> { }
     public class MeetingRepository : Repository<Meeting>, IMeetingRepository
     {
-        public MeetingRepository(DbContext dbContext) : base(dbContext) { }
+        public MeetingRepository(MeetingContext dbContext) : base(dbContext) { }
     }
 }
