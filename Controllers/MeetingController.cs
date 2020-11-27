@@ -8,6 +8,15 @@ using VirturlMeetingAssitant.Backend.Db;
 
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    public class MeetingAddDTO
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string RoomName { get; set; }
+        public MeetingRepeatType RepeatType { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+    }
     [ApiController]
     [Route("[controller]")]
     public class MeetingController : ControllerBase
@@ -28,8 +37,17 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpPost]
-        public void Add()
+        public async Task<ActionResult> Add(MeetingAddDTO dto)
         {
+            try
+            {
+                await _meetingRepository.AddFromDTOAsync(dto);
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
         }
     }

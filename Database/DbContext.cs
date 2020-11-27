@@ -32,8 +32,8 @@ namespace VirturlMeetingAssitant.Backend.Db
     {
         [Key]
         public string Name { get; set; }
-        public List<Meeting> RelatedMeetings { get; set; }
-        public List<User> Users { get; set; }
+        public virtual List<Meeting> RelatedMeetings { get; set; }
+        public virtual List<User> Users { get; set; }
     }
 
     public class Meeting
@@ -44,9 +44,9 @@ namespace VirturlMeetingAssitant.Backend.Db
         [Required]
         public string Title { get; set; }
         public string Description { get; set; }
-        public Room Location { get; set; }
-        public List<Department> Departments { get; set; }
-        public List<User> Attendees { get; set; }
+        public virtual Room Location { get; set; }
+        public virtual List<Department> Departments { get; set; }
+        public virtual List<User> Attendees { get; set; }
         public MeetingRepeatType RepeatType { get; set; }
         [Required]
         public DateTime FromDate { get; set; }
@@ -63,8 +63,8 @@ namespace VirturlMeetingAssitant.Backend.Db
         public string Name { get; set; }
         [Required]
         public string Password { get; set; }
-        public Department Department { get; set; }
-        public List<Meeting> AttendMeetings { get; set; }
+        public virtual Department Department { get; set; }
+        public virtual List<Meeting> AttendMeetings { get; set; }
         [Required]
         public string Email { get; set; }
     }

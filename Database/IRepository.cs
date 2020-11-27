@@ -8,18 +8,21 @@ using VirturlMeetingAssitant.Backend.Db;
 
 public interface IRepository<TEntity> where TEntity : class
 {
-    Task<TEntity> Get(object[] keyValues);
+    Task<TEntity> Get(params object[] keyValues);
     Task<IEnumerable<TEntity>> GetAll();
-    IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+    IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
 
-    void Add(TEntity entity);
-    void AddRange(IEnumerable<TEntity> entities);
-    void Remove(TEntity entity);
-    void RemoveRange(IEnumerable<TEntity> entities);
+    Task<TEntity> Add(TEntity entity);
+    Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities);
+    Task<TEntity> Update(TEntity entity);
+    Task Remove(TEntity entity);
+    Task RemoveRange(IEnumerable<TEntity> entities);
+
+    Task SaveChangesAsync();
 
 }
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new()
 {
     protected readonly MeetingContext _dbContext;
 
@@ -28,17 +31,21 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _dbContext = dbContext;
     }
 
-    public async void Add(TEntity entity)
+    public async Task<TEntity> Add(TEntity entity)
     {
         await _dbContext.Set<TEntity>().AddAsync(entity);
+        await this.SaveChangesAsync();
+
+        return entity;
     }
 
-    public async void AddRange(IEnumerable<TEntity> entities)
+    public async Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities)
     {
         await _dbContext.Set<TEntity>().AddRangeAsync(entities);
+        return entities;
     }
 
-    public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+    public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
     {
         return _dbContext.Set<TEntity>().Where(predicate);
     }
@@ -48,18 +55,45 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         return await _dbContext.Set<TEntity>().ToListAsync();
     }
 
-    public async Task<TEntity> Get(object[] keyValues)
+    public async Task<TEntity> Get(params object[] keyValues)
     {
         return await _dbContext.Set<TEntity>().FindAsync(keyValues);
     }
 
-    public void Remove(TEntity entity)
+    public async Task<TEntity> Update(TEntity entity)
     {
-        _dbContext.Set<TEntity>().Remove(entity);
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        try
+        {
+            _dbContext.Update(entity);
+            await this.SaveChangesAsync();
+
+            return entity;
+        }
+        catch (System.Exception ex)
+        {
+            throw new Exception($"{nameof(entity)} could not be updated: {ex.Message}");
+        }
     }
 
-    public void RemoveRange(IEnumerable<TEntity> entities)
+    public async Task Remove(TEntity entity)
+    {
+        _dbContext.Set<TEntity>().Remove(entity);
+        await this.SaveChangesAsync();
+    }
+
+    public async Task RemoveRange(IEnumerable<TEntity> entities)
     {
         _dbContext.Set<TEntity>().RemoveRange(entities);
+        await this.SaveChangesAsync();
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _dbContext.SaveChangesAsync();
     }
 }
