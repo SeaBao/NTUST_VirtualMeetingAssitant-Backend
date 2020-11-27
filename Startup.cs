@@ -28,7 +28,7 @@ namespace VirturlMeetingAssitant.Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MeetingContext>(options => options.UseNpgsql(Configuration.GetConnectionString("MeetingDatabase")));
+            services.AddDbContext<MeetingContext>(options => options.UseNpgsql(Configuration["MeetingDatabase:Connection"]));
 
             #region Repositories
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
@@ -36,6 +36,8 @@ namespace VirturlMeetingAssitant.Backend
             services.AddTransient<IRoomRepository, RoomRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             #endregion
+
+            services.AddRouting(options => options.LowercaseUrls = true);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -50,9 +52,9 @@ namespace VirturlMeetingAssitant.Backend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
             }
 
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend V1");
