@@ -40,5 +40,21 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 return Problem($"Message: {ex.Message}\n InnerException: {ex.InnerException}");
             }
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string roomName)
+        {
+            try
+            {
+                var room = await _roomRepository.Get(roomName);
+                await _roomRepository.Remove(room);
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
     }
 }

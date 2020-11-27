@@ -50,5 +50,21 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             }
 
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int meetingUid)
+        {
+            try
+            {
+                var meeting = await _meetingRepository.Get(meetingUid);
+                await _meetingRepository.Remove(meeting);
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
     }
 }
