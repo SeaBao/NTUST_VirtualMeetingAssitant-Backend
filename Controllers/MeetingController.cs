@@ -6,17 +6,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
 
-namespace VirturlMeetingAssitant.Backend.Controllers
+namespace VirturlMeetingAssitant.Backend.DTO
 {
+    public class MeetingDTO
+    {
+        public int MeetingID { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public List<string> Departments { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+    }
     public class MeetingAddDTO
     {
         public string Title { get; set; }
         public string Description { get; set; }
         public string RoomName { get; set; }
+        public List<string> Departments { get; set; }
         public MeetingRepeatType RepeatType { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
     }
+}
+
+namespace VirturlMeetingAssitant.Backend.Controllers
+{
+    using VirturlMeetingAssitant.Backend.DTO;
     [ApiController]
     [Route("[controller]")]
     public class MeetingController : ControllerBase
@@ -31,9 +46,23 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Meeting>> GetAll()
+        public async Task<IEnumerable<MeetingDTO>> GetAll()
         {
-            return await _meetingRepository.GetAll();
+            var meetings = await _meetingRepository.GetAll();
+
+
+            return meetings.Select(x =>
+            {
+                var dto = new MeetingDTO();
+                dto.MeetingID = x.MeetingID;
+                dto.Description = x.Description;
+                dto.Title = x.Title;
+                dto.FromDate = x.FromDate;
+                dto.ToDate = x.ToDate;
+                dto.Departments = x.Departments.Select(d => d.Name).ToList();
+
+                return dto;
+            });
         }
 
         [HttpPost]

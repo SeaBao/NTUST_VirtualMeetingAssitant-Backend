@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using VirturlMeetingAssitant.Backend.Controllers;
+using VirturlMeetingAssitant.Backend.DTO;
 
 
 namespace VirturlMeetingAssitant.Backend.Db
@@ -15,18 +15,23 @@ namespace VirturlMeetingAssitant.Backend.Db
     public class MeetingRepository : Repository<Meeting>, IMeetingRepository
     {
         private readonly IRoomRepository _roomRepository;
-        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository) : base(dbContext)
+        private readonly IDepartmentRepository _departmentRepository;
+        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository, IDepartmentRepository departmentRepository) : base(dbContext)
         {
             _roomRepository = roomRepository;
+            _departmentRepository = departmentRepository;
         }
 
         public async Task AddFromDTOAsync(MeetingAddDTO dto)
         {
             var room = _roomRepository.Find(x => x.Name == dto.RoomName).First();
+            var departments = _departmentRepository.Find(x => dto.Departments.Any(n => n == x.Name));
             var entity = new Meeting();
+
             entity.Title = dto.Title;
             entity.Description = dto.Description;
             entity.Location = room;
+            entity.Departments = departments.ToList();
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
 
