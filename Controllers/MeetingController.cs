@@ -46,7 +46,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             }
             catch (System.Exception ex)
             {
-                return BadRequest(ex.Message);
+                return Problem(ex.Message);
             }
 
         }
