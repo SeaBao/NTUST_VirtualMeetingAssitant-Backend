@@ -14,6 +14,8 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public string Title { get; set; }
         public string Description { get; set; }
         public List<string> Departments { get; set; }
+        public string Location { get; set; }
+        public int CreatorUid { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
     }
@@ -59,6 +61,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.Title = x.Title;
                 dto.FromDate = x.FromDate;
                 dto.ToDate = x.ToDate;
+                dto.Location = x.Location.Name;
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
                 return dto;
