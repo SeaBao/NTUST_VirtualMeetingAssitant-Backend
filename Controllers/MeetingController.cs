@@ -15,6 +15,7 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public string Description { get; set; }
         public List<string> Departments { get; set; }
         public string Location { get; set; }
+        public MeetingRepeatType RepeatType { get; set; }
         public int CreatorUid { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
@@ -35,7 +36,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
 {
     using VirturlMeetingAssitant.Backend.DTO;
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class MeetingController : ControllerBase
     {
         private readonly ILogger<MeetingController> _logger;
@@ -56,12 +57,13 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             return meetings.Select(x =>
             {
                 var dto = new MeetingDTO();
-                dto.MeetingID = x.MeetingID;
+                dto.MeetingID = x.ID;
                 dto.Description = x.Description;
                 dto.Title = x.Title;
                 dto.FromDate = x.FromDate;
                 dto.ToDate = x.ToDate;
                 dto.Location = x.Location.Name;
+                dto.RepeatType = x.RepeatType;
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
                 return dto;

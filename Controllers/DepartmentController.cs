@@ -6,10 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
 
+namespace VirturlMeetingAssitant.Backend.DTO
+{
+    public class DepartmentUpdateDTO
+    {
+        public string originalName { get; set; }
+        public string newName { get; set; }
+    }
+}
+
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    using VirturlMeetingAssitant.Backend.DTO;
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class DepartmentController : ControllerBase
     {
         private readonly ILogger<DepartmentController> _logger;
@@ -41,6 +51,27 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 return BadRequest(ex.Message);
             }
 
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> Update(DepartmentUpdateDTO dto)
+        {
+            try
+            {
+                var department = await _departmentRepository.Get(dto.originalName);
+                if (department == null)
+                {
+                    return new NotFoundObjectResult("No such department exists");
+                }
+
+                department.Name = dto.newName;
+                await _departmentRepository.Update(department);
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         [HttpDelete]

@@ -14,11 +14,27 @@ namespace VirturlMeetingAssitant.Backend.Db
         public DbSet<Department> Departments { get; set; }
 
         public MeetingContext(DbContextOptions<MeetingContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Room>()
+                .HasIndex(r => r.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Department>()
+                .HasIndex(d => d.Name)
+                .IsUnique();
+        }
     }
 
-    public class BaseEntity
+    public abstract class BaseEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdateTime { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedTime { get; set; }
     }
 
@@ -28,19 +44,15 @@ namespace VirturlMeetingAssitant.Backend.Db
         None,
     }
 
-    public class Department
+    public class Department : BaseEntity
     {
-        [Key]
         public string Name { get; set; }
         public virtual List<Meeting> RelatedMeetings { get; set; }
         public virtual List<User> Users { get; set; }
     }
 
-    public class Meeting
+    public class Meeting : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int MeetingID { get; set; }
         [Required]
         public string Title { get; set; }
         public string Description { get; set; }
@@ -54,11 +66,8 @@ namespace VirturlMeetingAssitant.Backend.Db
         public DateTime ToDate { get; set; }
     }
 
-    public class User
+    public class User : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserID { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
@@ -69,9 +78,9 @@ namespace VirturlMeetingAssitant.Backend.Db
         public string Email { get; set; }
     }
 
-    public class Room
+    public class Room : BaseEntity
     {
-        [Key]
+        [Required]
         public string Name { get; set; }
         [Required]
         public int Capacity { get; set; }

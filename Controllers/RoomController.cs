@@ -6,10 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
 
+namespace VirturlMeetingAssitant.Backend.DTO
+{
+    public class RoomAddDTO
+    {
+        public string Name { get; set; }
+        public int Capacity { get; set; }
+    }
+
+    public class RoomDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public int Capacity { get; set; }
+    }
+}
+
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    using VirturlMeetingAssitant.Backend.DTO;
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RoomController : ControllerBase
     {
         private readonly ILogger<RoomController> _logger;
@@ -22,17 +39,30 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Room>> GetAll()
+        public async Task<IEnumerable<RoomDTO>> GetAll()
         {
-            return await _roomRepository.GetAll();
+            var rooms = await _roomRepository.GetAll();
+
+            return rooms.Select(x =>
+            {
+                var dto = new RoomDTO();
+                dto.ID = x.ID;
+                dto.Name = x.Name;
+                dto.Capacity = x.Capacity;
+
+                return dto;
+            });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Room room)
+        public async Task<IActionResult> Add(RoomAddDTO dto)
         {
             try
             {
-                await _roomRepository.Add(room);
+                Room toCreatedRoom = new();
+                toCreatedRoom.Name = dto.Name;
+                toCreatedRoom.Capacity = dto.Capacity;
+                await _roomRepository.Add(toCreatedRoom);
                 return Ok();
             }
             catch (System.Exception ex)
@@ -46,9 +76,13 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         {
             try
             {
-                var room = await _roomRepository.Get(roomName);
-                await _roomRepository.Remove(room);
+                var room = _roomRepository.Find(x => x.Name == roomName).FirstOrDefault();
 
+                if (room == null)
+                {
+                    return NotFound($"The room ({roomName}) is not found");
+                }
+                await _roomRepository.Remove(room);
                 return Ok();
             }
             catch (System.Exception ex)
