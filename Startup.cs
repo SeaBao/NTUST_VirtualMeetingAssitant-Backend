@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using VirturlMeetingAssitant.Backend.Db;
+using AutoMapper;
 
 namespace VirturlMeetingAssitant.Backend
 {
@@ -47,7 +48,7 @@ namespace VirturlMeetingAssitant.Backend
             #endregion
 
             services.AddRouting(options => options.LowercaseUrls = true);
-
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>

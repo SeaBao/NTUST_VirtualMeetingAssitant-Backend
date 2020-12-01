@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
+using AutoMapper;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
@@ -30,6 +31,11 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
     }
+
+    public class MeetingUpdateDTO : MeetingAddDTO
+    {
+        public int ID { get; set; }
+    }
 }
 
 namespace VirturlMeetingAssitant.Backend.Controllers
@@ -40,19 +46,20 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     public class MeetingController : ControllerBase
     {
         private readonly ILogger<MeetingController> _logger;
+        private readonly IMapper _mapper;
         private readonly IMeetingRepository _meetingRepository;
 
-        public MeetingController(ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
+        public MeetingController(IMapper mapper, ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
         {
             _meetingRepository = meetingRepository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IEnumerable<MeetingDTO>> GetAll()
         {
             var meetings = await _meetingRepository.GetAll();
-
 
             return meetings.Select(x =>
             {
@@ -83,6 +90,20 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 return Problem(ex.Message);
             }
 
+        }
+
+        [HttpPatch]
+        public async Task<ActionResult> Update(MeetingUpdateDTO dto)
+        {
+            try
+            {
+                await _meetingRepository.UpdateFromDTOAsync(dto);
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+            return BadRequest();
         }
 
         [HttpDelete]
