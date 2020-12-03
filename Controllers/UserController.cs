@@ -17,6 +17,7 @@ namespace VirturlMeetingAssitant.Backend.DTO
 
     public class UserDTO
     {
+        public int ID { get; set; }
         [Required]
         public string Name { get; set; }
 
@@ -53,6 +54,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             {
                 return new UserDTO()
                 {
+                    ID = u.ID,
                     Name = u.Name,
                     Email = u.Email,
                     DepartmentName = u.Department.Name,
