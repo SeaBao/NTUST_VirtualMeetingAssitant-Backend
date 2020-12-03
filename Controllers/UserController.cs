@@ -9,22 +9,22 @@ using VirturlMeetingAssitant.Backend.Db;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
-    public class UserAddDTO
+    public class UserAddDTO : UserDTO
+    {
+        [Required]
+        public string Password { get; set; }
+    }
+
+    public class UserDTO
     {
         [Required]
         public string Name { get; set; }
-        [Required]
-        public string Password { get; set; }
+
         [Required]
         [EmailAddress]
         public string Email { get; set; }
         [Required]
         public string DepartmentName { get; set; }
-    }
-
-    public class UserDTO
-    {
-
     }
 }
 
@@ -45,9 +45,19 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<UserDTO>> GetAll()
         {
-            return await _userRepository.GetAll();
+            var uesrs = await _userRepository.GetAll();
+
+            return uesrs.Select(u =>
+            {
+                return new UserDTO()
+                {
+                    Name = u.Name,
+                    Email = u.Email,
+                    DepartmentName = u.Department.Name,
+                };
+            });
         }
 
         [HttpPost]
