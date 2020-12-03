@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VirturlMeetingAssitant.Backend.DTO;
+using BC = BCrypt.Net.BCrypt;
 namespace VirturlMeetingAssitant.Backend.Db
 {
     public interface IUserRepository : IRepository<User>
@@ -36,8 +37,9 @@ namespace VirturlMeetingAssitant.Backend.Db
             var user = new User()
             {
                 Name = dto.Name,
+                Password = BC.HashPassword(dto.Password),
                 Email = dto.Email,
-                Department = await _departmentRepository.Get(dto.DepartmentID),
+                Department = await _departmentRepository.Find(x => x.Name == dto.DepartmentName).FirstAsync(),
             };
 
             return await this.Add(user);

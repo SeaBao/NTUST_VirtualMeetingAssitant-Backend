@@ -19,7 +19,7 @@ namespace VirturlMeetingAssitant.Backend.DTO
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        public int DepartmentID { get; set; }
+        public string DepartmentName { get; set; }
     }
 
     public class UserDTO
