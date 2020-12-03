@@ -12,11 +12,20 @@ namespace VirturlMeetingAssitant.Backend.Db
         public DbSet<Meeting> Meetings { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<OneTimePassword> OneTimePasswords { get; set; }
 
         public MeetingContext(DbContextOptions<MeetingContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .Property(u => u.IsNeededChangePassword)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             modelBuilder.Entity<Room>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
@@ -40,8 +49,8 @@ namespace VirturlMeetingAssitant.Backend.Db
 
     public enum MeetingRepeatType
     {
-        Weekly,
         None,
+        Weekly,
     }
 
     public class Department : BaseEntity
@@ -74,8 +83,10 @@ namespace VirturlMeetingAssitant.Backend.Db
         public string Password { get; set; }
         public virtual Department Department { get; set; }
         public virtual List<Meeting> AttendMeetings { get; set; }
+        [EmailAddress]
         [Required]
         public string Email { get; set; }
+        public bool IsNeededChangePassword { get; set; }
     }
 
     public class Room : BaseEntity
@@ -84,5 +95,15 @@ namespace VirturlMeetingAssitant.Backend.Db
         public string Name { get; set; }
         [Required]
         public int Capacity { get; set; }
+    }
+
+    public class OneTimePassword
+    {
+        [Key]
+        public string Hash { get; set; }
+        [Required]
+        public virtual User RelatedUser { get; set; }
+        [Required]
+        public DateTime Expiration { get; set; }
     }
 }

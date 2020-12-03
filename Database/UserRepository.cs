@@ -2,14 +2,45 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-
-
+using VirturlMeetingAssitant.Backend.DTO;
 namespace VirturlMeetingAssitant.Backend.Db
 {
-    public interface IUserRepository : IRepository<User> { }
+    public interface IUserRepository : IRepository<User>
+    {
+        Task<User> AddFromDTOAsync(UserAddDTO dto);
+    }
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(MeetingContext dbContext) : base(dbContext) { }
+        private readonly IDepartmentRepository _departmentRepository;
+        public UserRepository(MeetingContext dbContext, IDepartmentRepository departmentRepository) : base(dbContext)
+        {
+            _departmentRepository = departmentRepository;
+        }
+
+        public async Task<bool> IsEmailExistsAsync(string email)
+        {
+            var count = await this.Find(x => x.Email == email).CountAsync();
+
+            return count > 0 ? true : false;
+        }
+
+        public async Task<User> AddFromDTOAsync(UserAddDTO dto)
+        {
+            if (await this.IsEmailExistsAsync(dto.Email))
+            {
+                throw new Exception($"The mail ({dto.Email} is already in use.");
+            }
+
+            var user = new User()
+            {
+                Name = dto.Name,
+                Email = dto.Email,
+                Department = await _departmentRepository.Get(dto.DepartmentID),
+            };
+
+            return await this.Add(user);
+        }
     }
 }
