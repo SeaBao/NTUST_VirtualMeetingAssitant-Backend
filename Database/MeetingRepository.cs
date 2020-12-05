@@ -17,10 +17,12 @@ namespace VirturlMeetingAssitant.Backend.Db
     {
         private readonly IRoomRepository _roomRepository;
         private readonly IDepartmentRepository _departmentRepository;
-        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository, IDepartmentRepository departmentRepository) : base(dbContext)
+        private readonly IUserRepository _userRepository;
+        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository, IDepartmentRepository departmentRepository, IUserRepository userRepository) : base(dbContext)
         {
             _roomRepository = roomRepository;
             _departmentRepository = departmentRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<bool> ValidateMeetingAsync(Meeting meeting)
@@ -44,14 +46,16 @@ namespace VirturlMeetingAssitant.Backend.Db
 
         public async Task AddFromDTOAsync(MeetingAddDTO dto)
         {
-            var departments = _departmentRepository.Find(x => dto.Departments.Any(n => n == x.Name));
-            var room = _roomRepository.Find(x => x.Name == dto.Location).First();
+            var departments = await _departmentRepository.Find(x => dto.Departments.Any(n => n == x.Name)).ToListAsync();
+            var room = await _roomRepository.Find(x => x.Name == dto.Location).FirstAsync();
+            var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
 
             var entity = new Meeting();
             entity.Title = dto.Title;
             entity.Description = dto.Description;
+            entity.Attendees = attendees;
             entity.Location = room;
-            entity.Departments = departments.ToList();
+            entity.Departments = departments;
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
 

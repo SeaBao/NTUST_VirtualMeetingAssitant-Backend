@@ -76,6 +76,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.ToDate = x.ToDate;
                 dto.Location = x.Location.Name;
                 dto.RepeatType = x.RepeatType;
+                dto.Attendees = x.Attendees.Select(x => x.ID).ToList();
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
                 return dto;
@@ -97,6 +98,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.ToDate = x.ToDate;
                 dto.Location = x.Location.Name;
                 dto.RepeatType = x.RepeatType;
+                dto.Attendees = x.Attendees.Select(x => x.ID).ToList();
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
                 return dto;
