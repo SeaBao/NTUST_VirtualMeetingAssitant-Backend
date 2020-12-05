@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
+using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 
 namespace VirturlMeetingAssitant.Backend.DTO
@@ -58,9 +59,9 @@ namespace VirturlMeetingAssitant.Backend.Controllers
 
         [Route("users/{id:int}")]
         [HttpGet]
-        public IEnumerable<MeetingDTO> GetByUserId(int id)
+        public async Task<IEnumerable<MeetingDTO>> GetByUserIdAsync(int id)
         {
-            var meetings = _meetingRepository.Find(m => m.Attendees.Where(u => u.ID == id).Count() > 0).ToList();
+            var meetings = await _meetingRepository.Find(m => m.Attendees.Where(u => u.ID == id).Count() > 0).ToListAsync();
 
             return meetings.Select(x =>
             {
