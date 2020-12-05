@@ -7,35 +7,38 @@ using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using System.ComponentModel.DataAnnotations;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
-    public class MeetingDTO
+    public class MeetingBaseDTO
     {
-        public int MeetingID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public List<string> Departments { get; set; }
+        public List<int> Attendees { get; set; }
         public string Location { get; set; }
         public MeetingRepeatType RepeatType { get; set; }
-        public int CreatorUid { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
     }
-    public class MeetingAddDTO
+    public class MeetingDTO : MeetingBaseDTO
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string RoomName { get; set; }
-        public List<string> Departments { get; set; }
-        public MeetingRepeatType RepeatType { get; set; }
-        public DateTime FromDate { get; set; }
-        public DateTime ToDate { get; set; }
+        public int MeetingID { get; set; }
+        public int CreatorUid { get; set; }
+    }
+    public class MeetingAddDTO : MeetingBaseDTO
+    {
+
     }
 
-    public class MeetingUpdateDTO : MeetingAddDTO
+    public class MeetingUpdateDTO : MeetingBaseDTO
     {
-        public int ID { get; set; }
+        [Required]
+        public int MeetingID { get; set; }
+        new public MeetingRepeatType? RepeatType { get; set; }
+        new public DateTime? FromDate { get; set; }
+        new public DateTime? ToDate { get; set; }
     }
 }
 
