@@ -9,15 +9,8 @@ using VirturlMeetingAssitant.Backend.Db;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
-    public class UserAddDTO : UserDTO
+    public class UserBaseDTO
     {
-        [Required]
-        public string Password { get; set; }
-    }
-
-    public class UserDTO
-    {
-        public int ID { get; set; }
         [Required]
         public string Name { get; set; }
 
@@ -26,6 +19,16 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public string Email { get; set; }
         [Required]
         public string DepartmentName { get; set; }
+    }
+    public class UserAddDTO : UserBaseDTO
+    {
+        [Required]
+        public string Password { get; set; }
+    }
+
+    public class UserDTO : UserBaseDTO
+    {
+        public int ID { get; set; }
     }
 }
 
