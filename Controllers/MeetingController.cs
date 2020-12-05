@@ -56,6 +56,28 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             _mapper = mapper;
         }
 
+        [Route("users/{id:int}")]
+        [HttpGet]
+        public IEnumerable<MeetingDTO> GetByUserId(int id)
+        {
+            var meetings = _meetingRepository.Find(m => m.Attendees.Where(u => u.ID == id).Count() > 0).ToList();
+
+            return meetings.Select(x =>
+            {
+                var dto = new MeetingDTO();
+                dto.MeetingID = x.ID;
+                dto.Description = x.Description;
+                dto.Title = x.Title;
+                dto.FromDate = x.FromDate;
+                dto.ToDate = x.ToDate;
+                dto.Location = x.Location.Name;
+                dto.RepeatType = x.RepeatType;
+                dto.Departments = x.Departments.Select(d => d.Name).ToList();
+
+                return dto;
+            });
+        }
+
         [HttpGet]
         public async Task<IEnumerable<MeetingDTO>> GetAll()
         {
