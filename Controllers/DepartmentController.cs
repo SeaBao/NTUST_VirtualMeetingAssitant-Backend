@@ -18,12 +18,6 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public IEnumerable<int> Ids { get; set; }
     }
 
-    public class DepartmentAddDTO
-    {
-        [Required]
-        public string Name { get; set; }
-    }
-
     public class DepartmentDTO
     {
         public string Name { get; set; }
@@ -67,30 +61,14 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(DepartmentAddDTO dto)
+        public async Task<IActionResult> Add(DepartmentUpdateDTO dto)
         {
             try
             {
-                var department = new Department() { Name = dto.Name };
-                await _departmentRepository.Add(department);
-                return Ok();
-            }
-            catch (System.Exception)
-            {
-                return BadRequest("Duplicate department name");
-            }
-
-        }
-
-        [HttpPatch]
-        public async Task<IActionResult> Update(DepartmentUpdateDTO dto)
-        {
-            try
-            {
-                var department = await _departmentRepository.Get(dto.Name);
+                var department = await _departmentRepository.Find(d => d.Name == dto.Name).FirstAsync();
                 if (department == null)
                 {
-                    return new NotFoundObjectResult("No such department exists");
+                    department = new Department() { Name = dto.Name };
                 }
 
                 var users = await _userRepository.Find(u => dto.Ids.Contains(u.ID)).ToListAsync();
