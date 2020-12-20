@@ -18,6 +18,12 @@ namespace VirturlMeetingAssitant.Backend.DTO
         public IEnumerable<int> Ids { get; set; }
     }
 
+    public class DepartmentAddDTO
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+
     public class DepartmentDTO
     {
         public string Name { get; set; }
@@ -61,16 +67,17 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Department department)
+        public async Task<IActionResult> Add(DepartmentAddDTO dto)
         {
             try
             {
+                var department = new Department() { Name = dto.Name };
                 await _departmentRepository.Add(department);
                 return Ok();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Duplicate department name");
             }
 
         }
