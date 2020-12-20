@@ -15,7 +15,7 @@ namespace VirturlMeetingAssitant.Backend.DTO
         [Required]
         public string Name { get; set; }
         [Required]
-        public IEnumerable<int> IDs { get; set; }
+        public IEnumerable<int> Ids { get; set; }
     }
 
     public class DepartmentDTO
@@ -86,7 +86,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                     return new NotFoundObjectResult("No such department exists");
                 }
 
-                var users = await _userRepository.Find(u => dto.IDs.Contains(u.ID)).ToListAsync();
+                var users = await _userRepository.Find(u => dto.Ids.Contains(u.ID)).ToListAsync();
                 department.Users = users;
                 await _departmentRepository.Update(department);
                 return Ok();
