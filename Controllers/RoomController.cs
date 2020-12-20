@@ -58,7 +58,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpPatch("{id:int}")]
-        public async Task<IActionResult> Update(int id, int capacity)
+        public async Task<IActionResult> Update(int id, [Required] int capacity)
         {
             var room = await _roomRepository.Get(id);
 
