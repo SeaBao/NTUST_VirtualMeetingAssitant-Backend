@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,9 @@ namespace VirturlMeetingAssitant.Backend.DTO
 {
     public class RoomAddDTO
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public int Capacity { get; set; }
     }
 
