@@ -57,6 +57,28 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             });
         }
 
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> Update(int id, int capacity)
+        {
+            var room = await _roomRepository.Get(id);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+
+            if (capacity < 0)
+            {
+                return BadRequest("Capacity must be greater than 0");
+            }
+
+            room.Capacity = capacity;
+
+            await _roomRepository.Update(room);
+
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Add(RoomAddDTO dto)
         {
