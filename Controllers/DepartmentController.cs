@@ -87,7 +87,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         {
             try
             {
-                var department = await _departmentRepository.Get(departmentName);
+                var department = await _departmentRepository.Find(d => d.Name == departmentName).FirstOrDefaultAsync();
                 await _departmentRepository.Remove(department);
             }
             catch (Exception ex)
