@@ -65,7 +65,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         {
             try
             {
-                var department = await _departmentRepository.Find(d => d.Name == dto.Name).FirstAsync();
+                var department = await _departmentRepository.Find(d => d.Name == dto.Name).FirstOrDefaultAsync();
                 if (department == null)
                 {
                     department = new Department() { Name = dto.Name };
