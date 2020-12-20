@@ -25,7 +25,6 @@ namespace VirturlMeetingAssitant.Backend.DTO
     {
         [Required]
         public int ID { get; set; }
-        [Required]
         public string OldPassword { get; set; }
         [Required]
         public string NewPassword { get; set; }
@@ -111,7 +110,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 {
                     return Ok();
                 }
-                return BadRequest("Old password was not match");
+                return BadRequest("Old password is not match");
             }
             catch (System.Exception ex)
             {
