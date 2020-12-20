@@ -1,17 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VirturlMeetingAssitant.Backend.Db;
+using Microsoft.EntityFrameworkCore;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
     public class DepartmentUpdateDTO
     {
-        public string originalName { get; set; }
-        public string newName { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public IEnumerable<int> IDs { get; set; }
+    }
+
+    public class DepartmentDTO
+    {
+        public string Name { get; set; }
+        public IEnumerable<int> Attendees { get; set; }
     }
 }
 
@@ -24,18 +34,30 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     {
         private readonly ILogger<DepartmentController> _logger;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUserRepository _userRepository;
 
-        public DepartmentController(ILogger<DepartmentController> logger, IDepartmentRepository departmentRepository)
+        public DepartmentController(ILogger<DepartmentController> logger, IDepartmentRepository departmentRepository, IUserRepository userRepository)
         {
             _departmentRepository = departmentRepository;
+            _userRepository = userRepository;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<string>> GetAll()
+        public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {
             var departments = await _departmentRepository.GetAll();
-            return departments.Select(x => x.Name);
+            return departments.Select(d =>
+            {
+                return new DepartmentDTO()
+                {
+                    Name = d.Name,
+                    Attendees = d.Users.Select(u =>
+                    {
+                        return u.ID;
+                    }),
+                };
+            });
         }
 
         [HttpPost]
@@ -58,13 +80,14 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         {
             try
             {
-                var department = await _departmentRepository.Get(dto.originalName);
+                var department = await _departmentRepository.Get(dto.Name);
                 if (department == null)
                 {
                     return new NotFoundObjectResult("No such department exists");
                 }
 
-                department.Name = dto.newName;
+                var users = await _userRepository.Find(u => dto.IDs.Contains(u.ID)).ToListAsync();
+                department.Users = users;
                 await _departmentRepository.Update(department);
                 return Ok();
             }

@@ -11,6 +11,8 @@ namespace VirturlMeetingAssitant.Backend.Db
     public interface IUserRepository : IRepository<User>
     {
         Task<User> AddFromDTOAsync(UserAddDTO dto);
+        Task<User> UpdateFromDTOAsync(UserUpdateDTO dto);
+        Task<bool> UpdatePasswordFromDTO(UserPasswordUpdateDTO dto);
     }
     public class UserRepository : Repository<User>, IUserRepository
     {
@@ -43,6 +45,55 @@ namespace VirturlMeetingAssitant.Backend.Db
             };
 
             return await this.Add(user);
+        }
+
+        public async Task<User> UpdateFromDTOAsync(UserUpdateDTO dto)
+        {
+            var user = await this.Find(u => u.ID == dto.ID).FirstAsync();
+
+            if (user == null)
+            {
+                throw new Exception($"The user {dto.ID} was not found.");
+            }
+
+            if (dto.Name != null)
+            {
+                user.Name = dto.Name;
+            }
+
+            if (dto.Email != null)
+            {
+                user.Email = dto.Email;
+            }
+
+            if (dto.DepartmentName != null)
+            {
+                var department = await _departmentRepository.Find(d => d.Name == dto.DepartmentName).FirstAsync();
+                if (department == null)
+                {
+                    throw new Exception($"Department {dto.DepartmentName} is not found.");
+                }
+
+                user.Department = department;
+            }
+
+            return await this.Update(user);
+        }
+
+        public async Task<bool> UpdatePasswordFromDTO(UserPasswordUpdateDTO dto)
+        {
+            var user = await this.Find(u => u.ID == dto.ID).FirstAsync();
+
+            if (BC.Verify(dto.OldPassword, user.Password))
+            {
+                user.Password = BC.HashPassword(dto.NewPassword);
+                await this.Update(user);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

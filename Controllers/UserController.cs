@@ -20,6 +20,27 @@ namespace VirturlMeetingAssitant.Backend.DTO
         [Required]
         public string DepartmentName { get; set; }
     }
+
+    public class UserPasswordUpdateDTO
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public string OldPassword { get; set; }
+        [Required]
+        public string NewPassword { get; set; }
+    }
+
+    public class UserUpdateDTO
+    {
+        [Required]
+        public int ID { get; set; }
+        public string Name { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
+        public string DepartmentName { get; set; }
+
+    }
     public class UserAddDTO : UserBaseDTO
     {
         [Required]
@@ -71,6 +92,39 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             try
             {
                 await _userRepository.AddFromDTOAsync(dto);
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem($"Message: {ex.Message}\n InnerException: {ex.InnerException}");
+            }
+        }
+
+        [HttpPatch("password")]
+        public async Task<IActionResult> UpdatePassword(UserPasswordUpdateDTO dto)
+        {
+            try
+            {
+                var result = await _userRepository.UpdatePasswordFromDTO(dto);
+
+                if (result)
+                {
+                    return Ok();
+                }
+                return BadRequest("Old password was not match");
+            }
+            catch (System.Exception ex)
+            {
+                return Problem($"Message: {ex.Message}\n InnerException: {ex.InnerException}");
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUser(UserUpdateDTO dto)
+        {
+            try
+            {
+                await _userRepository.UpdateFromDTOAsync(dto);
                 return Ok();
             }
             catch (System.Exception ex)
