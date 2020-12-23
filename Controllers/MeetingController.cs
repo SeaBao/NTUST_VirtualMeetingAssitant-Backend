@@ -84,7 +84,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetMeeting(int id)
+        public async Task<ActionResult<MeetingDTO>> GetMeeting(int id)
         {
             var meeting = await _meetingRepository.Find(x => x.ID == id).FirstOrDefaultAsync();
 
