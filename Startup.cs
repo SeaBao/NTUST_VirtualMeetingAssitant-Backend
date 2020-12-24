@@ -54,7 +54,7 @@ namespace VirturlMeetingAssitant.Backend
 
             services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
             {
-                options.Authority = "https://localhost:8081";
+                options.Authority = Configuration["AuthServer_Address"];
                 options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
                     ValidateAudience = false
