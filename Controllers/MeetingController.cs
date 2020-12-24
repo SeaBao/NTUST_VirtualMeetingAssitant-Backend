@@ -86,6 +86,32 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             });
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<MeetingDTO>> GetMeeting(int id)
+        {
+            var meeting = await _meetingRepository.Find(x => x.ID == id).FirstOrDefaultAsync();
+
+            if (meeting == null)
+            {
+                return NotFound();
+            }
+
+            var dto = new MeetingDTO()
+            {
+                MeetingID = meeting.ID,
+                Description = meeting.Description,
+                Title = meeting.Title,
+                FromDate = meeting.FromDate,
+                ToDate = meeting.ToDate,
+                Location = meeting.Location.Name,
+                RepeatType = meeting.RepeatType,
+                Attendees = meeting.Attendees.Select(x => x.ID).ToList(),
+                Departments = meeting.Departments.Select(d => d.Name).ToList()
+            };
+
+            return Ok(dto);
+        }
+
         [HttpGet]
         public async Task<IEnumerable<MeetingDTO>> GetAll()
         {
