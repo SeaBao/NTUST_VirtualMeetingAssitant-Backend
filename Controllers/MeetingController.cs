@@ -44,7 +44,10 @@ namespace VirturlMeetingAssitant.Backend.DTO
 
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using VirturlMeetingAssitant.Backend.DTO;
+
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MeetingController : ControllerBase

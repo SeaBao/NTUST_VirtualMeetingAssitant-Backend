@@ -27,7 +27,10 @@ namespace VirturlMeetingAssitant.Backend.DTO
 
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using VirturlMeetingAssitant.Backend.DTO;
+
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DepartmentController : ControllerBase
@@ -61,7 +64,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(DepartmentUpdateDTO dto)
+        public async Task<IActionResult> AddOrUpdate(DepartmentUpdateDTO dto)
         {
             try
             {
