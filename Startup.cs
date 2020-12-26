@@ -45,6 +45,7 @@ namespace VirturlMeetingAssitant.Backend
             services.AddTransient<IRoomRepository, RoomRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IDepartmentRepository, DepartmentRepository>();
+            services.AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>();
             #endregion
 
             services.AddRouting(options => options.LowercaseUrls = true);

@@ -105,5 +105,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         public virtual User RelatedUser { get; set; }
         [Required]
         public DateTime Expiration { get; set; }
+        [Required]
+        public bool IsUsed { get; set; }
     }
 }

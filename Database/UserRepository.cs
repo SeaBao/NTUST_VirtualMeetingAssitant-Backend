@@ -13,6 +13,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         Task<User> AddFromDTOAsync(UserAddDTO dto);
         Task<User> UpdateFromDTOAsync(UserUpdateDTO dto);
         Task<bool> UpdatePasswordFromDTO(UserPasswordUpdateDTO dto);
+        Task<User> UpdatePassword(User user, string newPassword);
     }
     public class UserRepository : Repository<User>, IUserRepository
     {
@@ -80,6 +81,13 @@ namespace VirturlMeetingAssitant.Backend.Db
             return await this.Update(user);
         }
 
+        public async Task<User> UpdatePassword(User user, string newPassword)
+        {
+            user.Password = BC.HashPassword(newPassword);
+
+            return await this.Update(user);
+        }
+
         public async Task<bool> UpdatePasswordFromDTO(UserPasswordUpdateDTO dto)
         {
             var user = await this.Find(u => u.ID == dto.ID).FirstAsync();
@@ -88,7 +96,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             {
                 if (BC.Verify(dto.OldPassword, user.Password))
                 {
-                    user.Password = BC.HashPassword(dto.NewPassword);
+                    await this.UpdatePassword(user, dto.NewPassword);
                 }
                 else
                 {
@@ -97,10 +105,9 @@ namespace VirturlMeetingAssitant.Backend.Db
             }
             else
             {
-                user.Password = BC.HashPassword(dto.NewPassword);
+                await this.UpdatePassword(user, dto.NewPassword);
             }
 
-            await this.Update(user);
             return true;
         }
     }
