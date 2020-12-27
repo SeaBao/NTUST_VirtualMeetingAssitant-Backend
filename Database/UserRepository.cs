@@ -34,7 +34,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         {
             if (await this.IsEmailExistsAsync(dto.Email))
             {
-                throw new Exception($"The mail ({dto.Email} is already in use.");
+                throw new Exception($"The mail ({dto.Email}) is already in use.");
             }
 
             var user = new User()
