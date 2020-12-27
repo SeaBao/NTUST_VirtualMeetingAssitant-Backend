@@ -26,6 +26,14 @@ namespace VirturlMeetingAssitant.Backend.Db
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
+            modelBuilder.Entity<User>()
+                .Property(u => u.IsVerified)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.IsNeededChangePassword)
+                .HasDefaultValue(false);
+
             modelBuilder.Entity<Room>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
@@ -51,6 +59,12 @@ namespace VirturlMeetingAssitant.Backend.Db
     {
         None,
         Weekly,
+    }
+
+    public enum UserGroupType
+    {
+        NormalUser,
+        Manager,
     }
 
     public class Department : BaseEntity
@@ -86,6 +100,10 @@ namespace VirturlMeetingAssitant.Backend.Db
         [EmailAddress]
         [Required]
         public string Email { get; set; }
+        [Required]
+        public UserGroupType GroupType { get; set; }
+        [Required]
+        public bool IsVerified { get; set; }
         public bool IsNeededChangePassword { get; set; }
     }
 

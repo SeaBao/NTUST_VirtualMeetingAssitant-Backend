@@ -101,8 +101,8 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 MeetingID = meeting.ID,
                 Description = meeting.Description,
                 Title = meeting.Title,
-                FromDate = meeting.FromDate,
-                ToDate = meeting.ToDate,
+                FromDate = meeting.FromDate.ToUniversalTime(),
+                ToDate = meeting.ToDate.ToUniversalTime(),
                 Location = meeting.Location.Name,
                 RepeatType = meeting.RepeatType,
                 Attendees = meeting.Attendees.Select(x => x.ID).ToList(),
@@ -123,8 +123,8 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.MeetingID = x.ID;
                 dto.Description = x.Description;
                 dto.Title = x.Title;
-                dto.FromDate = x.FromDate;
-                dto.ToDate = x.ToDate;
+                dto.FromDate = x.FromDate.ToUniversalTime();
+                dto.ToDate = x.ToDate.ToUniversalTime();
                 dto.Location = x.Location.Name;
                 dto.RepeatType = x.RepeatType;
                 dto.Attendees = x.Attendees.Select(x => x.ID).ToList();
