@@ -83,7 +83,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                     ID = u.ID,
                     Name = u.Name,
                     Email = u.Email,
-                    DepartmentName = u.Department.Name,
+                    DepartmentName = u.Department == null ? null : u.Department.Name
                 };
             });
         }

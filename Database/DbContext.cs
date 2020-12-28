@@ -34,6 +34,11 @@ namespace VirturlMeetingAssitant.Backend.Db
                 .Property(u => u.IsNeededChangePassword)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Department)
+                .WithMany(d => d.Users)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
             modelBuilder.Entity<Room>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
