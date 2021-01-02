@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using VirturlMeetingAssitant.Backend.Db;
+using System.Security.Claims;
 
 namespace VirturlMeetingAssitant.Backend.DTO
 {
@@ -133,6 +135,16 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             {
                 return Problem($"Message: {ex.Message}\n InnerException: {ex.InnerException}");
             }
+        }
+
+        [HttpGet("otp")]
+        public async Task<ActionResult<bool>> CheckNeedUpdatePassword()
+        {
+            string id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            var dbuser = await _userRepository.Find(u => u.ID == Convert.ToInt32(id)).FirstOrDefaultAsync();
+
+            return Ok(dbuser.IsNeededChangePassword);
         }
 
         [HttpDelete]

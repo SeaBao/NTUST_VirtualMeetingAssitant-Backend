@@ -32,7 +32,7 @@ namespace VirturlMeetingAssitant.Backend.Db
 
             modelBuilder.Entity<User>()
                 .Property(u => u.IsNeededChangePassword)
-                .HasDefaultValue(false);
+                .HasDefaultValue(true);
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Department)
