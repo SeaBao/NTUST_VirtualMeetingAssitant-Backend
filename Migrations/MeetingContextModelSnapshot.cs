@@ -86,6 +86,9 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int?>("CreatorID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -110,6 +113,8 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("CreatorID");
 
                     b.HasIndex("LocationID");
 
@@ -252,9 +257,15 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("VirturlMeetingAssitant.Backend.Db.Meeting", b =>
                 {
+                    b.HasOne("VirturlMeetingAssitant.Backend.Db.User", "Creator")
+                        .WithMany("CreatedMeetings")
+                        .HasForeignKey("CreatorID");
+
                     b.HasOne("VirturlMeetingAssitant.Backend.Db.Room", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
+
+                    b.Navigation("Creator");
 
                     b.Navigation("Location");
                 });
@@ -280,6 +291,11 @@ namespace Backend.Migrations
             modelBuilder.Entity("VirturlMeetingAssitant.Backend.Db.Department", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("VirturlMeetingAssitant.Backend.Db.User", b =>
+                {
+                    b.Navigation("CreatedMeetings");
                 });
 #pragma warning restore 612, 618
         }

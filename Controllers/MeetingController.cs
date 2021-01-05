@@ -44,6 +44,7 @@ namespace VirturlMeetingAssitant.Backend.DTO
 
 namespace VirturlMeetingAssitant.Backend.Controllers
 {
+    using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
     using VirturlMeetingAssitant.Backend.DTO;
 
@@ -54,7 +55,6 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     {
         private readonly ILogger<MeetingController> _logger;
         private readonly IMeetingRepository _meetingRepository;
-
         public MeetingController(ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
         {
             _meetingRepository = meetingRepository;
@@ -77,6 +77,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.ToDate = x.ToDate;
                 dto.Location = x.Location.Name;
                 dto.RepeatType = x.RepeatType;
+                dto.CreatorUid = x.Creator.ID;
                 dto.Attendees = x.Attendees.Select(x => x.ID).ToList();
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
@@ -103,6 +104,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 ToDate = meeting.ToDate.ToUniversalTime(),
                 Location = meeting.Location.Name,
                 RepeatType = meeting.RepeatType,
+                CreatorUid = meeting.Creator.ID,
                 Attendees = meeting.Attendees.Select(x => x.ID).ToList(),
                 Departments = meeting.Departments.Select(d => d.Name).ToList()
             };
@@ -125,6 +127,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 dto.ToDate = x.ToDate.ToUniversalTime();
                 dto.Location = x.Location.Name;
                 dto.RepeatType = x.RepeatType;
+                dto.CreatorUid = x.Creator.ID;
                 dto.Attendees = x.Attendees.Select(x => x.ID).ToList();
                 dto.Departments = x.Departments.Select(d => d.Name).ToList();
 
@@ -137,7 +140,9 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         {
             try
             {
-                await _meetingRepository.AddFromDTOAsync(dto);
+                string id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                await _meetingRepository.AddFromDTOAsync(dto, Convert.ToInt32(id));
 
                 return Ok();
             }

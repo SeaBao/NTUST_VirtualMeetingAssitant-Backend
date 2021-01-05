@@ -10,7 +10,7 @@ namespace VirturlMeetingAssitant.Backend.Db
 {
     public interface IMeetingRepository : IRepository<Meeting>
     {
-        Task AddFromDTOAsync(MeetingAddDTO dto);
+        Task AddFromDTOAsync(MeetingAddDTO dto, int creatorID);
         Task UpdateFromDTOAsync(MeetingUpdateDTO dto);
     }
     public class MeetingRepository : Repository<Meeting>, IMeetingRepository
@@ -56,8 +56,10 @@ namespace VirturlMeetingAssitant.Backend.Db
             return true;
         }
 
-        public async Task AddFromDTOAsync(MeetingAddDTO dto)
+        public async Task AddFromDTOAsync(MeetingAddDTO dto, int creatorID)
         {
+            var creator = await _userRepository.Get(creatorID);
+
             var departments = await _departmentRepository.Find(x => dto.Departments.Any(n => n == x.Name)).ToListAsync();
             var room = await _roomRepository.Find(x => x.Name == dto.Location).FirstAsync();
             var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
@@ -68,6 +70,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             entity.Attendees = attendees;
             entity.Location = room;
             entity.Departments = departments;
+            entity.Creator = creator;
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
 

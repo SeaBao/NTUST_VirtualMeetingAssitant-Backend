@@ -39,6 +39,11 @@ namespace VirturlMeetingAssitant.Backend.Db
                 .WithMany(d => d.Users)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.CreatedMeetings)
+                .WithOne(m => m.Creator)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
             modelBuilder.Entity<Room>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
@@ -87,6 +92,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         public virtual Room Location { get; set; }
         public virtual List<Department> Departments { get; set; }
         public virtual List<User> Attendees { get; set; }
+        public virtual User Creator { get; set; }
         public MeetingRepeatType RepeatType { get; set; }
         [Required]
         public DateTime FromDate { get; set; }
@@ -102,6 +108,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         public string Password { get; set; }
         public virtual Department Department { get; set; }
         public virtual List<Meeting> AttendMeetings { get; set; }
+        public virtual List<Meeting> CreatedMeetings { get; set; }
         [EmailAddress]
         [Required]
         public string Email { get; set; }

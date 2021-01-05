@@ -13,6 +13,7 @@ namespace VirturlMeetingAssitant.Backend.Db
     {
         Task<(OneTimePassword otp, bool isValid)> CheckOTPValid(string otp);
         Task<bool> UpdateUserPassword(string otp, User user, string newPassword);
+        Task<OneTimePassword> CreateOTP(User user, DateTime expiration);
     }
     public class OneTimePasswordRepository : Repository<OneTimePassword>, IOneTimePasswordRepository
     {
@@ -26,6 +27,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         {
             var otp = new OneTimePassword()
             {
+                Hash = KeyGenerator.GetUniqueKey(12),
                 RelatedUser = user,
                 Expiration = expiration,
             };

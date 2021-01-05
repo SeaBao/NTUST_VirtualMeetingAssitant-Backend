@@ -42,6 +42,16 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             return Ok(result.isValid);
         }
 
+
+        [HttpGet("test")]
+        public async Task<IActionResult> Create()
+        {
+            var user = await _userRepository.Get(18);
+            var otp = await _otpRepository.CreateOTP(user, DateTime.Now);
+
+            return Ok(otp);
+        }
+
         [HttpPost]
         public async Task<IActionResult> UpdateUserPassword(UpdateUserPasswordDTO dto, string otp)
         {
