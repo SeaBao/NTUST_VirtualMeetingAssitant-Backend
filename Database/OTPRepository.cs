@@ -12,7 +12,7 @@ namespace VirturlMeetingAssitant.Backend.Db
     public interface IOneTimePasswordRepository : IRepository<OneTimePassword>
     {
         Task<(OneTimePassword otp, bool isValid)> CheckOTPValid(string otp);
-        Task<bool> UpdateUserPassword(string otp, User user, string newPassword);
+        Task<bool> UpdateUserPassword(string otp, string newPassword);
         Task<OneTimePassword> CreateOTP(User user, DateTime expiration);
     }
     public class OneTimePasswordRepository : Repository<OneTimePassword>, IOneTimePasswordRepository
@@ -27,9 +27,10 @@ namespace VirturlMeetingAssitant.Backend.Db
         {
             var otp = new OneTimePassword()
             {
-                Hash = KeyGenerator.GetUniqueKey(12),
+                Hash = KeyGenerator.GetUniqueKey(15),
                 RelatedUser = user,
                 Expiration = expiration,
+                IsUsed = false,
             };
 
             return await this.Add(otp);
@@ -44,7 +45,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             return (entity, true);
         }
 
-        public async Task<bool> UpdateUserPassword(string otp, User user, string newPassword)
+        public async Task<bool> UpdateUserPassword(string otp, string newPassword)
         {
             var checkResult = await this.CheckOTPValid(otp);
 
@@ -53,12 +54,12 @@ namespace VirturlMeetingAssitant.Backend.Db
                 return false;
             }
 
-            if (checkResult.otp.RelatedUser != user || checkResult.otp.Expiration < DateTime.UtcNow)
+            if (checkResult.otp.Expiration < DateTime.UtcNow)
             {
                 return false;
             }
 
-            await _userRepository.UpdatePassword(user, newPassword);
+            await _userRepository.UpdatePassword(checkResult.otp.RelatedUser, newPassword);
             checkResult.otp.IsUsed = true;
             await this.Update(checkResult.otp);
             return true;

@@ -52,6 +52,13 @@ namespace VirturlMeetingAssitant.Backend.DTO
     {
         public int ID { get; set; }
     }
+
+    public class ForgetPasswordDTO
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
 }
 
 namespace VirturlMeetingAssitant.Backend.Controllers
@@ -59,22 +66,24 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     using Microsoft.AspNetCore.Authorization;
     using VirturlMeetingAssitant.Backend.DTO;
 
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IOneTimePasswordRepository _otpRepository;
         private readonly IMailService _mailService;
 
-        public UserController(ILogger<UserController> logger, IUserRepository userRepository, IMailService mailService)
+        public UserController(ILogger<UserController> logger, IUserRepository userRepository, IOneTimePasswordRepository otpRepository, IMailService mailService)
         {
             _userRepository = userRepository;
+            _otpRepository = otpRepository;
             _mailService = mailService;
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<UserDTO>> GetAll()
         {
@@ -92,6 +101,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Add(UserAddDTO dto)
         {
@@ -113,6 +123,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpPatch("password")]
         public async Task<IActionResult> UpdatePassword(UserPasswordUpdateDTO dto)
         {
@@ -132,6 +143,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpPatch]
         public async Task<IActionResult> UpdateUser(UserUpdateDTO dto)
         {
@@ -146,6 +158,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("otp")]
         public async Task<ActionResult<bool>> CheckNeedUpdatePassword()
         {
@@ -156,6 +169,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             return Ok(dbuser.IsNeededChangePassword);
         }
 
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> Delete(int userId)
         {
@@ -163,6 +177,35 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             {
                 var user = await _userRepository.Get(userId);
                 await _userRepository.Remove(user);
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost("forget-pw")]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordDTO dto)
+        {
+            try
+            {
+                var user = await _userRepository.Find(x => x.Email == dto.Email).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var otp = await _otpRepository.CreateOTP(user, DateTime.UtcNow.AddHours(24));
+
+                var resetUrl = $"http://localhost:8080/resetPassword?otp={otp.Hash}";
+
+                await _mailService.SendMail("Reset Password Notification",
+                    $"<p>Your reset URL is <a href=\"{resetUrl}\">{resetUrl}</a></p>",
+                    MailType.ResetPassword,
+                    new string[] { user.Email }
+                );
 
                 return Ok();
             }

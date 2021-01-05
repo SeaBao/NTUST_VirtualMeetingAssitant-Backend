@@ -12,7 +12,6 @@ namespace VirturlMeetingAssitant.Backend.DTO
 {
     public class UpdateUserPasswordDTO
     {
-        public int UserId { get; set; }
         public string NewPassword { get; set; }
     }
 }
@@ -55,14 +54,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUserPassword(UpdateUserPasswordDTO dto, string otp)
         {
-            var user = await _userRepository.Find(u => u.ID == dto.UserId).FirstOrDefaultAsync();
-
-            if (user == null)
-            {
-                return NotFound("The user ID is not found");
-            }
-
-            var updateResult = await _otpRepository.UpdateUserPassword(otp, user, dto.NewPassword);
+            var updateResult = await _otpRepository.UpdateUserPassword(otp, dto.NewPassword);
 
             if (updateResult)
             {
