@@ -53,14 +53,12 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     public class MeetingController : ControllerBase
     {
         private readonly ILogger<MeetingController> _logger;
-        private readonly IMapper _mapper;
         private readonly IMeetingRepository _meetingRepository;
 
-        public MeetingController(IMapper mapper, ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
+        public MeetingController(ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
         {
             _meetingRepository = meetingRepository;
             _logger = logger;
-            _mapper = mapper;
         }
 
         [Route("users/{id:int}")]
@@ -140,6 +138,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             try
             {
                 await _meetingRepository.AddFromDTOAsync(dto);
+
                 return Ok();
             }
             catch (System.Exception ex)
@@ -160,7 +159,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             {
                 return Problem(ex.Message);
             }
-            return BadRequest();
+            return Ok();
         }
 
         [HttpDelete]

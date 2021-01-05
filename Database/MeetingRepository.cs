@@ -18,25 +18,37 @@ namespace VirturlMeetingAssitant.Backend.Db
         private readonly IRoomRepository _roomRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IUserRepository _userRepository;
-        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository, IDepartmentRepository departmentRepository, IUserRepository userRepository) : base(dbContext)
+        private readonly IMailService _mailService;
+        public MeetingRepository(MeetingContext dbContext, IRoomRepository roomRepository, IDepartmentRepository departmentRepository, IUserRepository userRepository, IMailService mailService) : base(dbContext)
         {
             _roomRepository = roomRepository;
             _departmentRepository = departmentRepository;
             _userRepository = userRepository;
+            _mailService = mailService;
         }
 
-        public async Task<bool> ValidateMeetingAsync(Meeting meeting)
+        public async Task<bool> ValidateMeetingAsync(Meeting meeting, bool toUpdate)
         {
             if (meeting.FromDate >= meeting.ToDate)
             {
                 throw new Exception("The attribute 'FromDate' must smaller than the attribute 'ToDate'.");
             }
 
-            var meetingsInSameRoomCount = await this.Find(x => x.Location == meeting.Location).
-                Where(x => x.ToDate >= meeting.ToDate && x.FromDate <= meeting.FromDate)
-                .CountAsync();
+            var meetingsInSameRoom = this.Find(x => x.Location == meeting.Location).Where(x => x.ToDate >= meeting.ToDate && x.FromDate <= meeting.FromDate);
+            var count = await meetingsInSameRoom.CountAsync();
 
-            if (meetingsInSameRoomCount != 0)
+            if (count == 1)
+            {
+                var item = await meetingsInSameRoom.FirstAsync();
+
+                if (item.ID == meeting.ID)
+                {
+                    return true;
+                }
+            }
+
+
+            if (count != 0)
             {
                 throw new Exception("There is already a meeting in the room at the same time.");
             }
@@ -59,9 +71,20 @@ namespace VirturlMeetingAssitant.Backend.Db
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
 
-            if (await ValidateMeetingAsync(entity))
+            if (await ValidateMeetingAsync(entity, false))
             {
                 await this.Add(entity);
+
+                await _mailService.SendMail(
+                    "New meeting!",
+                    $"<p>You have been invited to the meeting '{dto.Title}'</p>" +
+                    $"<p>Description: { (String.IsNullOrEmpty(dto.Description) ? "Empty" : dto.Description) }</p>" +
+                    $"<p>The location is {dto.Location}</p>" +
+                    $"<p>The Departments of this meeting is {String.Join(",", departments.Select(x => x.Name))} </p>" +
+                    $"<p>The meeting will start on {dto.FromDate}. End on {dto.ToDate} </p>",
+                    MailType.MeetingCreated,
+                    attendees.Select(x => x.Email)
+                );
             }
         }
 
@@ -75,9 +98,20 @@ namespace VirturlMeetingAssitant.Backend.Db
             meeting.FromDate = dto.FromDate ?? meeting.FromDate;
             meeting.ToDate = dto.ToDate ?? meeting.ToDate;
 
-            if (await ValidateMeetingAsync(meeting))
+            if (await ValidateMeetingAsync(meeting, true))
             {
                 await this.Update(meeting);
+
+                await _mailService.SendMail(
+                    $"Your meeting '{meeting.Title}' is updated",
+                    $"<p>The meeting '{meeting.Title}' have been updated</p>" +
+                    $"<p>Description: { (String.IsNullOrEmpty(meeting.Description) ? "Empty" : meeting.Description) }</p>" +
+                    $"<p>The location is {meeting.Location.Name}</p>" +
+                    $"<p>The Departments of this meeting is {String.Join(",", meeting.Departments.Select(x => x.Name))} </p>" +
+                    $"<p>The meeting will start on {meeting.FromDate}. End on {meeting.ToDate} </p>",
+                    MailType.MeetingUpdated,
+                    meeting.Attendees.Select(x => x.Email)
+                );
             }
         }
     }

@@ -100,7 +100,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 await _userRepository.AddFromDTOAsync(dto);
 
                 await _mailService.SendMail(
-                    "Hi! You have been added into our meeting service", "Welcome!",
+                    "Hi! You have been added into our meeting service", "Welcome! Feel free to check out website on http://localhost:8080",
                     MailType.NewUser,
                     new string[] { dto.Email }
                 );
