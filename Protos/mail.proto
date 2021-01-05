@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "VirturlMeetingAssitant.Backend";
+
+package mail;
+
+// The greeting service definition.
+service Mailer {
+  // Sends a greeting
+  rpc SendMail (MailRequest) returns (MailReply);
+}
+
+enum MailType {
+  ResetPassword = 0;
+  VerifyEmail = 1;
+  JoinMeeting = 2;
+  MeetingCreated = 3;
+  MeetingCancelled = 4;
+  MeetingUpdated = 5;
+  NewUser = 6;
+}
+
+// The request message containing the user's name.
+message MailRequest {
+  string subject = 2;
+  repeated string emails = 3;
+  string content = 4;
+  MailType type = 5;
+}
+
+// The response message containing the greetings.
+message MailReply {
+  string message = 1;
+}

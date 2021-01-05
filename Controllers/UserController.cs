@@ -66,10 +66,12 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IMailService _mailService;
 
-        public UserController(ILogger<UserController> logger, IUserRepository userRepository)
+        public UserController(ILogger<UserController> logger, IUserRepository userRepository, IMailService mailService)
         {
             _userRepository = userRepository;
+            _mailService = mailService;
             _logger = logger;
         }
 
@@ -96,6 +98,13 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             try
             {
                 await _userRepository.AddFromDTOAsync(dto);
+
+                await _mailService.SendMail(
+                    "Hi! You have been added into our meeting service", "Welcome!",
+                    MailType.NewUser,
+                    new string[] { dto.Email }
+                );
+
                 return Ok();
             }
             catch (System.Exception ex)

@@ -39,6 +39,8 @@ namespace VirturlMeetingAssitant.Backend
                     .UseNpgsql(Configuration["MeetingDatabase_Connection"]);
             });
 
+            services.AddSingleton<IMailService, MailService>();
+
             #region Repositories
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IMeetingRepository, MeetingRepository>();
