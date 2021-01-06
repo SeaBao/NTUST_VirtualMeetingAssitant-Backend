@@ -100,7 +100,6 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             });
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Add(UserAddDTO dto)
         {
