@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using VirturlMeetingAssitant.Backend.Db;
 
 namespace VirturlMeetingAssitant.Backend
 {
@@ -23,8 +25,6 @@ namespace VirturlMeetingAssitant.Backend
 
             var channel = GrpcChannel.ForAddress(configuration["MailServerAddr"]);
             _grpcClinet = new Mailer.MailerClient(channel);
-
-            _logger.Log(LogLevel.Information, "Connected to mail server!");
         }
         public async Task SendMail(string subject, string content, MailType type, IEnumerable<string> recipients)
         {

@@ -62,7 +62,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdateTime { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedTime { get; set; }
+        public DateTimeKind CreatedTime { get; set; }
     }
 
     public enum MeetingRepeatType

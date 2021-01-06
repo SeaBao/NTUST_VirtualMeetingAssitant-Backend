@@ -27,7 +27,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         {
             var otp = new OneTimePassword()
             {
-                Hash = KeyGenerator.GetUniqueKey(15),
+                Hash = KeyGenerator.GetUniqueKey(20),
                 RelatedUser = user,
                 Expiration = expiration,
                 IsUsed = false,

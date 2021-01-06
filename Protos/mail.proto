@@ -18,6 +18,7 @@ enum MailType {
   MeetingCancelled = 4;
   MeetingUpdated = 5;
   NewUser = 6;
+  MeetingNotifying = 7;
 }
 
 // The request message containing the user's name.

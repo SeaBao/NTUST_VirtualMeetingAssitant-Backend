@@ -47,7 +47,6 @@ namespace VirturlMeetingAssitant.Backend.Db
                 }
             }
 
-
             if (count != 0)
             {
                 throw new Exception("There is already a meeting in the room at the same time.");
@@ -80,13 +79,14 @@ namespace VirturlMeetingAssitant.Backend.Db
 
                 await _mailService.SendMail(
                     "New meeting!",
-                    $"<p>You have been invited to the meeting '{dto.Title}'</p>" +
-                    $"<p>Description: { (String.IsNullOrEmpty(dto.Description) ? "Empty" : dto.Description) }</p>" +
-                    $"<p>The location is {dto.Location}</p>" +
+                    $"<p>You have been invited to the meeting '{entity.Title}'</p>" +
+                    $"<p>Description: { (String.IsNullOrEmpty(entity.Description) ? "Empty" : entity.Description) }</p>" +
+                    $"<p>The Host: { entity.Creator.Name }</p>" +
+                    $"<p>The location is {entity.Location.Name}</p>" +
                     $"<p>The Departments of this meeting is {String.Join(",", departments.Select(x => x.Name))} </p>" +
-                    $"<p>The meeting will start on {dto.FromDate}. End on {dto.ToDate} </p>",
+                    $"<p>The meeting will start on {entity.FromDate}. End on {entity.ToDate} </p>",
                     MailType.MeetingCreated,
-                    attendees.Select(x => x.Email)
+                    entity.Attendees.Select(x => x.Email)
                 );
             }
         }
@@ -109,6 +109,7 @@ namespace VirturlMeetingAssitant.Backend.Db
                     $"Your meeting '{meeting.Title}' is updated",
                     $"<p>The meeting '{meeting.Title}' have been updated</p>" +
                     $"<p>Description: { (String.IsNullOrEmpty(meeting.Description) ? "Empty" : meeting.Description) }</p>" +
+                    $"<p>The Host: { meeting.Creator.Name }</p>" +
                     $"<p>The location is {meeting.Location.Name}</p>" +
                     $"<p>The Departments of this meeting is {String.Join(",", meeting.Departments.Select(x => x.Name))} </p>" +
                     $"<p>The meeting will start on {meeting.FromDate}. End on {meeting.ToDate} </p>",

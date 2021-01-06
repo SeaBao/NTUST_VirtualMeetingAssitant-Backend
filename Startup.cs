@@ -50,6 +50,7 @@ namespace VirturlMeetingAssitant.Backend
             services.AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>();
             #endregion
 
+            services.AddHostedService<MeetingNotifyHostedService>();
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers().AddNewtonsoftJson(options =>
