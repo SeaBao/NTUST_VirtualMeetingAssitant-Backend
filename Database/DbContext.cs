@@ -19,10 +19,6 @@ namespace VirturlMeetingAssitant.Backend.Db
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .Property(u => u.IsNeededChangePassword)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
@@ -51,6 +47,18 @@ namespace VirturlMeetingAssitant.Backend.Db
             modelBuilder.Entity<Department>()
                 .HasIndex(d => d.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasData(new User
+                {
+                    ID = 1,
+                    Name = "Manager",
+                    Password = BCrypt.Net.BCrypt.HashPassword("password"),
+                    Email = "manager@example.com",
+                    GroupType = UserGroupType.Manager,
+                    IsVerified = true,
+                    IsNeededChangePassword = true,
+                });
         }
     }
 

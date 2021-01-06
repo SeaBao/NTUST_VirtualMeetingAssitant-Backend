@@ -223,6 +223,20 @@ namespace Backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            CreatedTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "manager@example.com",
+                            GroupType = 1,
+                            IsNeededChangePassword = true,
+                            IsVerified = true,
+                            LastUpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Manager",
+                            Password = "$2a$11$issCIamZCReOitXzYbpZ0eJCEMDQO7R28PqCQTtMn5a1/7ezQn2Fe"
+                        });
                 });
 
             modelBuilder.Entity("DepartmentMeeting", b =>

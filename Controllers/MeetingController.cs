@@ -55,9 +55,11 @@ namespace VirturlMeetingAssitant.Backend.Controllers
     {
         private readonly ILogger<MeetingController> _logger;
         private readonly IMeetingRepository _meetingRepository;
-        public MeetingController(ILogger<MeetingController> logger, IMeetingRepository meetingRepository)
+        private readonly IMailService _mailService;
+        public MeetingController(ILogger<MeetingController> logger, IMeetingRepository meetingRepository, IMailService mailService)
         {
             _meetingRepository = meetingRepository;
+            _mailService = mailService;
             _logger = logger;
         }
 
@@ -173,7 +175,11 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             try
             {
                 var meeting = await _meetingRepository.Get(meetingUid);
+                var title = meeting.Title;
+                var attendees = meeting.Attendees;
+
                 await _meetingRepository.Remove(meeting);
+                await _mailService.SendMail("One of your meeting has been canceled", $"Your meeting '{title}' has been canceled.", MailType.MeetingCancelled, attendees.Select(x => x.Email));
 
                 return Ok();
             }
