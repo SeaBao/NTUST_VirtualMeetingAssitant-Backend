@@ -101,6 +101,9 @@ namespace VirturlMeetingAssitant.Backend.Db
             meeting.FromDate = dto.FromDate ?? meeting.FromDate;
             meeting.ToDate = dto.ToDate ?? meeting.ToDate;
 
+            var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
+            meeting.Attendees = attendees;
+
             if (await ValidateMeetingAsync(meeting, true))
             {
                 await this.Update(meeting);
