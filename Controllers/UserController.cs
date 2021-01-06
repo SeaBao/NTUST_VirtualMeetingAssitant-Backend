@@ -27,7 +27,6 @@ namespace VirturlMeetingAssitant.Backend.DTO
     {
         [Required]
         public int ID { get; set; }
-        public string OldPassword { get; set; }
         [Required]
         public string NewPassword { get; set; }
     }

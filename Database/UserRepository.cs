@@ -92,21 +92,7 @@ namespace VirturlMeetingAssitant.Backend.Db
         {
             var user = await this.Find(u => u.ID == dto.ID).FirstAsync();
 
-            if (dto.OldPassword != null)
-            {
-                if (BC.Verify(dto.OldPassword, user.Password))
-                {
-                    await this.UpdatePassword(user, dto.NewPassword);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                await this.UpdatePassword(user, dto.NewPassword);
-            }
+            await this.UpdatePassword(user, dto.NewPassword);
 
             return true;
         }
