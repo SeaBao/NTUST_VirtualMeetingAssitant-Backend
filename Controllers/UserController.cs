@@ -197,7 +197,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
 
                 var otp = await _otpRepository.CreateOTP(user, DateTime.UtcNow.AddHours(24));
 
-                var resetUrl = $"http://localhost:8080/resetPassword?otp={otp.Hash}";
+                var resetUrl = $"http://localhost:8080/#/resetPassword?otp={otp.Hash}";
 
                 await _mailService.SendMail("Reset Password Notification",
                     $"<p>Your reset URL is <a href=\"{resetUrl}\">{resetUrl}</a></p>",
