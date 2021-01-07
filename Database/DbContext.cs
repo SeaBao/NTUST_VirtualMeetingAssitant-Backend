@@ -33,7 +33,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Department)
                 .WithMany(d => d.Users)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.CreatedMeetings)
@@ -53,7 +53,7 @@ namespace VirturlMeetingAssitant.Backend.Db
                 {
                     ID = 1,
                     Name = "Manager",
-                    Password = BCrypt.Net.BCrypt.HashPassword("password"),
+                    Password = "$2a$11$issCIamZCReOitXzYbpZ0eJCEMDQO7R28PqCQTtMn5a1/7ezQn2Fe",
                     Email = "manager@example.com",
                     GroupType = UserGroupType.Manager,
                     IsVerified = true,

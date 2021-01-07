@@ -44,7 +44,9 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             _userRepository = userRepository;
             _logger = logger;
         }
-
+        /// <summary>
+        /// Get all departments
+        /// </summary>
         [HttpGet]
         public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {

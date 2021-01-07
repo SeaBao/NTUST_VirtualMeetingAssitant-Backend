@@ -25,15 +25,18 @@ namespace VirturlMeetingAssitant.Backend
 
         private async Task DoWork(CancellationToken stoppingToken)
         {
+            // What's period of checking every meeting. (Unit: sec)
             var checkPeriod = 10;
             while (!stoppingToken.IsCancellationRequested)
             {
                 using var scope = _scopeFactory.CreateScope();
+                // Inject IMeetingRepository to here
                 var meetingRepo = scope.ServiceProvider.GetRequiredService<IMeetingRepository>();
 
                 var meetings = await meetingRepo.GetAll();
                 foreach (var m in meetings)
                 {
+                    // If there's a meeting will begin less then one hour. Then we send email notification to attendees
                     var diff = (m.FromDate.AddHours(-1) - DateTime.UtcNow).TotalSeconds;
                     if (diff <= checkPeriod && diff >= 0)
                     {
@@ -51,6 +54,7 @@ namespace VirturlMeetingAssitant.Backend
                     }
                 }
 
+                // Make this task not run very frequently.
                 await Task.Delay(1000 * checkPeriod);
             }
         }

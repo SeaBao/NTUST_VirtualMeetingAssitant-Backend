@@ -235,7 +235,7 @@ namespace Backend.Migrations
                             IsVerified = true,
                             LastUpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Manager",
-                            Password = "$2a$11$issCIamZCReOitXzYbpZ0eJCEMDQO7R28PqCQTtMn5a1/7ezQn2Fe"
+                            Password = "$2a$11$2ZEmjgtNjkN63Bcpr3IK4Ozez51JSsI7aZmszpq/WEBHOAFiPa2Ry"
                         });
                 });
 
@@ -297,7 +297,8 @@ namespace Backend.Migrations
                 {
                     b.HasOne("VirturlMeetingAssitant.Backend.Db.Department", "Department")
                         .WithMany("Users")
-                        .HasForeignKey("DepartmentID");
+                        .HasForeignKey("DepartmentID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Department");
                 });

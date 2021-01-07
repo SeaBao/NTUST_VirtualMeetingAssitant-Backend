@@ -56,6 +56,7 @@ namespace VirturlMeetingAssitant.Backend
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            // Add Bearer authentication
             services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
             {
                 options.Authority = Configuration["AuthServer_Address"];
@@ -64,6 +65,8 @@ namespace VirturlMeetingAssitant.Backend
                     ValidateAudience = false
                 };
             });
+
+            // Add SwaggerAPI Documentation.
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend", Version = "v1" });
@@ -109,7 +112,6 @@ namespace VirturlMeetingAssitant.Backend
             {
                 app.UseExceptionHandler("/error");
             }
-
 
             // app.UseHttpsRedirection();
 

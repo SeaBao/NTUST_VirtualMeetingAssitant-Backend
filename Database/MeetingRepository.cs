@@ -101,12 +101,24 @@ namespace VirturlMeetingAssitant.Backend.Db
             meeting.FromDate = dto.FromDate ?? meeting.FromDate;
             meeting.ToDate = dto.ToDate ?? meeting.ToDate;
 
-            var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
-            meeting.Attendees = attendees;
-
             if (await ValidateMeetingAsync(meeting, true))
             {
-                await this.Update(meeting);
+                var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
+
+                if (attendees.Count() != 0)
+                {
+                    meeting.Attendees = null;
+                    await this.Update(meeting);
+
+                    var t = await this.Get(dto.MeetingID);
+                    t.Attendees = attendees;
+                    await this.Update(t);
+                }
+                else
+                {
+                    await this.Update(meeting);
+                }
+
 
                 await _mailService.SendMail(
                     $"Your meeting '{meeting.Title}' is updated",
