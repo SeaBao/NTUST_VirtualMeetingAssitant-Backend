@@ -27,7 +27,13 @@ namespace VirturlMeetingAssitant.Backend.Db
             _mailService = mailService;
         }
 
-        public async Task<bool> ValidateMeetingAsync(Meeting meeting, bool toUpdate)
+        /// <summary>
+        /// Validate a meeting.
+        /// </summary>
+        /// <remarks>
+        /// Check if there's a meeting conflicts with this. If there's a conflict, return false.
+        /// </remarks>
+        public async Task<bool> ValidateMeetingAsync(Meeting meeting)
         {
             if (meeting.FromDate >= meeting.ToDate)
             {
@@ -55,6 +61,11 @@ namespace VirturlMeetingAssitant.Backend.Db
             return true;
         }
 
+        /// <summary>
+        /// Add a meeting from DTO.
+        /// </summary>
+        /// <param name="dto">The DTO.</param>
+        /// <param name="creatorID">Who create this meeting.</param>
         public async Task AddFromDTOAsync(MeetingAddDTO dto, int creatorID)
         {
             var creator = await _userRepository.Get(creatorID);
@@ -73,7 +84,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
 
-            if (await ValidateMeetingAsync(entity, false))
+            if (await ValidateMeetingAsync(entity))
             {
                 await this.Add(entity);
 
@@ -91,6 +102,9 @@ namespace VirturlMeetingAssitant.Backend.Db
             }
         }
 
+        /// <summary>
+        /// Update a existing meeting from DTO.
+        /// </summary>
         public async Task UpdateFromDTOAsync(MeetingUpdateDTO dto)
         {
             var meeting = await this.Get(dto.MeetingID);
@@ -101,7 +115,7 @@ namespace VirturlMeetingAssitant.Backend.Db
             meeting.FromDate = dto.FromDate ?? meeting.FromDate;
             meeting.ToDate = dto.ToDate ?? meeting.ToDate;
 
-            if (await ValidateMeetingAsync(meeting, true))
+            if (await ValidateMeetingAsync(meeting))
             {
                 var attendees = await _userRepository.Find(u => dto.Attendees.Contains(u.ID)).ToListAsync();
 

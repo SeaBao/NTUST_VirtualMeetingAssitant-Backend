@@ -64,6 +64,9 @@ namespace VirturlMeetingAssitant.Backend.Controllers
             });
         }
 
+        /// <summary>
+        /// Add or update a department depends on DTO.
+        /// </summary>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddOrUpdate(DepartmentUpdateDTO dto)

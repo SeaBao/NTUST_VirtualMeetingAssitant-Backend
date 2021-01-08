@@ -12,6 +12,9 @@ namespace VirturlMeetingAssitant.Backend
 {
     public interface IMailService
     {
+        /// <summary>
+        /// Send a new email to the specified recipients
+        /// </summary>
         Task SendMail(string subject, string content, MailType type, IEnumerable<string> recipients);
     }
 
@@ -23,14 +26,17 @@ namespace VirturlMeetingAssitant.Backend
         {
             _logger = logger;
 
+            // Setup gRPC server connection to mail sevrver.
             var channel = GrpcChannel.ForAddress(configuration["MailServerAddr"]);
             _grpcClinet = new Mailer.MailerClient(channel);
         }
         public async Task SendMail(string subject, string content, MailType type, IEnumerable<string> recipients)
         {
+            // Create a new mail reqeust.
             var request = new MailRequest() { Subject = subject, Content = content, Type = type };
             request.Emails.AddRange(recipients);
 
+            // Send the request to mail server
             var reply = await _grpcClinet.SendMailAsync(request);
 
             _logger.Log(LogLevel.Information, $"Received reply {reply}");

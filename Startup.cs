@@ -33,12 +33,14 @@ namespace VirturlMeetingAssitant.Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add Database service
             services.AddDbContext<MeetingContext>(options =>
             {
                 options.UseLazyLoadingProxies()
                     .UseNpgsql(Configuration["MeetingDatabase_Connection"]);
             });
 
+            // Inject our IMailService into DI.
             services.AddSingleton<IMailService, MailService>();
 
             #region Repositories
@@ -51,8 +53,12 @@ namespace VirturlMeetingAssitant.Backend
             #endregion
 
             services.AddHostedService<MeetingNotifyHostedService>();
+
+            // Make the first character of route's name is lowercase.
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddAutoMapper(typeof(Startup));
+
+            // Switch ASP.NET Core JSON encoding service to Newtonsoft.Json.
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -93,7 +99,7 @@ namespace VirturlMeetingAssitant.Backend
                             },
                             Scheme = "oauth2",
                             Name = "Bearer",
-                            In = ParameterLocation.Header,
+                            In = ParameterLocation.Header, // Bearer in the request header.
                         },
                         new List<string>()
                     }

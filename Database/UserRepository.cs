@@ -8,11 +8,24 @@ using VirturlMeetingAssitant.Backend.DTO;
 using BC = BCrypt.Net.BCrypt;
 namespace VirturlMeetingAssitant.Backend.Db
 {
+    /// <summary>The user repository contains users from database.</summary>
     public interface IUserRepository : IRepository<User>
     {
+        /// <summary>
+        /// Add a new user from DTO.
+        /// </summary>
         Task<User> AddFromDTOAsync(UserAddDTO dto);
+        /// <summary>
+        /// Update a existing user from DTO.
+        /// </summary>
         Task<User> UpdateFromDTOAsync(UserUpdateDTO dto);
+        /// <summary>
+        /// Update a existing user with new password.
+        /// </summary>
         Task<bool> UpdatePasswordFromDTO(UserPasswordUpdateDTO dto);
+        /// <summary>
+        /// Update a existing user with new password from DTO.
+        /// </summary>
         Task<User> UpdatePassword(User user, string newPassword);
     }
     public class UserRepository : Repository<User>, IUserRepository
@@ -23,6 +36,9 @@ namespace VirturlMeetingAssitant.Backend.Db
             _departmentRepository = departmentRepository;
         }
 
+        /// <summary>
+        /// Check if there's a user with that email. If not, return false.
+        /// </summary>
         public async Task<bool> IsEmailExistsAsync(string email)
         {
             var count = await this.Find(x => x.Email == email).CountAsync();

@@ -48,6 +48,8 @@ namespace VirturlMeetingAssitant.Backend.Db
                 .HasIndex(d => d.Name)
                 .IsUnique();
 
+            // Default user after init the database.
+            // Email is "manager@example.com", Password is "password"
             modelBuilder.Entity<User>()
                 .HasData(new User
                 {

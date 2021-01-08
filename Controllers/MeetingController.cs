@@ -178,6 +178,7 @@ namespace VirturlMeetingAssitant.Backend.Controllers
                 var title = meeting.Title;
                 var attendees = meeting.Attendees;
 
+                // Remove the meeting and notify the recipients.
                 await _meetingRepository.Remove(meeting);
                 await _mailService.SendMail("One of your meeting has been canceled", $"Your meeting '{title}' has been canceled.", MailType.MeetingCancelled, attendees.Select(x => x.Email));
 
