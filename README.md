@@ -1,3 +1,6 @@
+# What is this?
+- A course final project from 'Software Engineering'
+
 # Projects
 - `AuthServer` - The authentication server
 - `Backend` - The main meeting management server
